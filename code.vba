@@ -77,4 +77,13 @@ Sub Process_auto()
             ActiveSheet.Rows(i).EntireRow.Delete
         End If
     Next i
+
+    Dim l_column As Range
+    Dim formula_cell As String
+    
+    Set l_column = Sheets("Resultado").Range("L1:L15")
+    For Each cell In l_column
+        formula_cell = cell.Formula
+        Range("M1").Value = formula_cell
+    Next cell
 End Sub
