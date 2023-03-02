@@ -69,21 +69,24 @@ Sub Process_auto()
     Next sheets_book
     
     ' Eliminacion de los titulos (No decidido aun)
-    Dim i As Long
-    Dim LastRow As Long
-    LastRow = Sheets("Duplicate").Cells.Find(What:="*", SearchOrder:=xlRows, SearchDirection:=xlPrevious).row
-    For i = LastRow To 1 Step -1
-        If Sheets("Duplicate").Cells(i, 1).Value = "Primer Datahub" Then
-            ActiveSheet.Rows(i).EntireRow.Delete
-        End If
-    Next i
+'    Dim i As Long
+'    Dim LastRow As Long
+'    LastRow = Sheets("Duplicate").Cells.Find(What:="*", SearchOrder:=xlRows, SearchDirection:=xlPrevious).row
+'    For i = LastRow To 1 Step -1
+'        If Sheets("Duplicate").Cells(i, 1).Value = "Primer Datahub" Then
+'            ActiveSheet.Rows(i).EntireRow.Delete
+'        End If
+'    Next i
 
     Dim l_column As Range
     Dim formula_cell As String
+    Dim parameters As String
     
-    Set l_column = Sheets("Resultado").Range("L1:L15")
+    Set l_column = Sheets("Resultado").Range("L2:L2")
     For Each cell In l_column
-        formula_cell = cell.Formula
-        Range("M1").Value = formula_cell
+        formula_cell = cell.Formula2Local
+        Sheets("Resultado").Range("M1").Value = formula_cell
+        parameters = Split(formula_cell, ",")
+        Sheets("Resultado").Range("M2").Value = parameters
     Next cell
 End Sub
