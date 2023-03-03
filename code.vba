@@ -100,4 +100,21 @@ Sub Process_auto()
             cell_counter = cell_counter + 1
         End If
     Next cell
+    
+    '
+    Dim reference_bimester As Range
+    Dim reference_counter As Integer
+    Dim liquidacion_ruedo_book As Workbook
+    reference_counter = 3
+    
+    Set liquidacion_ruedo_book = Workbooks.Open("C:\Users\duvan.espinal\Desktop\Automatizacion PYG\Liquidación Al Ruedo - NovDic22.xlsm")
+    liquidacion_ruedo_book.Activate
+    
+    Set reference_bimester = Sheets("Liquidación Al Ruedo ND22").Range("AE3:AE245")
+    
+    For Each cell In reference_bimester
+        ' cell.Formula = "=BUSCARV(H3,'[Al Ruedo Codificación ND.xlsx]Resultado'!$A:$L,12,FALSO)"
+        cell.FormulaLocal = "=BUSCARV(H" & reference_counter & ",'[Al Ruedo Codificación ND.xlsx]Resultado'!$A:$L,12,FALSO)"
+        reference_counter = reference_counter + 1
+    Next cell
 End Sub
