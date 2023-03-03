@@ -4,13 +4,13 @@ Sub Process_auto()
     ' Declaracion de variables
     Dim column As Range
     Dim value_sought As String
-    Dim search_book As Workbook
+    Dim codificacion_nd_book As Workbook
     Dim sheets_book As Worksheet
     
     Dim datahub_column As Range
     
     Dim row As Range
-    Dim counter As String
+    Dim counter As Integer
     Dim row_value As String
     
     counter = 1
@@ -23,10 +23,10 @@ Sub Process_auto()
     ' Asignacion de valor y abrir archivo
     value_sought = "Codificaciones"
     
-    Set search_book = Workbooks.Open("C:\Users\duvan.espinal\Desktop\Automatizacion PYG\Al Ruedo Codificación ND.xlsx")
+    Set codificacion_nd_book = Workbooks.Open("C:\Users\duvan.espinal\Desktop\Automatizacion PYG\Al Ruedo Codificación ND.xlsx")
     
     ' Buscar de la columna
-    For Each sheets_book In search_book.Worksheets
+    For Each sheets_book In codificacion_nd_book.Worksheets
         If sheets_book.Name = "Nacional Cacharreros" Or sheets_book.Name = "Nacional Abarroteros" Or sheets_book.Name = "Costa Abarroteros" Or sheets_book.Name = "Costa Cacharreros" Or sheets_book.Name = "Antioquia Cacharreros" Or sheets_book.Name = "Antioquia Abarrotero" Then
             Dim cell As Range
             Set column = sheets_book.Range("AG:AG")
@@ -42,7 +42,7 @@ Sub Process_auto()
     Worksheets.Add.Name = "Duplicate"
     
     ' Escribir la informacion de todas las hojas en una.
-    For Each sheets_book In search_book.Worksheets
+    For Each sheets_book In codificacion_nd_book.Worksheets
     
         ' Recorrer Columna De Valores
         If sheets_book.Name = "Nacional Cacharreros" Or sheets_book.Name = "Nacional Abarroteros" Or sheets_book.Name = "Costa Abarroteros" Or sheets_book.Name = "Costa Cacharreros" Or sheets_book.Name = "Antioquia Cacharreros" Or sheets_book.Name = "Antioquia Abarrotero" Then
@@ -79,20 +79,18 @@ Sub Process_auto()
 '    Next i
 
     Dim l_column As Range
-    Dim formula_cell As String
+    Dim formula_cell, formula_completed As String
     Dim parameters() As String
-    Dim formula_completed As String
     
     Dim cell_counter As Integer
     cell_counter = 2
     
     Sheets("Resultado").Range("L1").Value = "Codificaciones"
-    
     Set l_column = Sheets("Resultado").Range("L2:L300")
+    
     For Each cell In l_column
         If cell.Value <> "" Then
             formula_cell = cell.Formula
-            ' Sheets("Resultado").Range("M2").Value = formula_cell
             
             parameters = Split(formula_cell, ",")
             formula_completed = parameters(0) & "," & parameters(1) & "," & 33 & "," & parameters(3)
