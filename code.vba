@@ -46,7 +46,7 @@ Sub Process_auto()
     
         ' Recorrer Columna De Valores
         If sheets_book.Name = "Nacional Cacharreros" Or sheets_book.Name = "Nacional Abarroteros" Or sheets_book.Name = "Costa Abarroteros" Or sheets_book.Name = "Costa Cacharreros" Or sheets_book.Name = "Antioquia Cacharreros" Or sheets_book.Name = "Antioquia Abarrotero" Then
-            Set datahub_column = sheets_book.Range("A3:A150")
+            Set datahub_column = sheets_book.Range("A3:A250")
             For Each row In datahub_column
                 If row.Value <> "" Then
                     ' Pasamos las filas
@@ -80,13 +80,26 @@ Sub Process_auto()
 
     Dim l_column As Range
     Dim formula_cell As String
-    Dim parameters As String
+    Dim parameters() As String
+    Dim formula_completed As String
     
-    Set l_column = Sheets("Resultado").Range("L2:L2")
+    Dim cell_counter As Integer
+    cell_counter = 2
+    
+    Sheets("Resultado").Range("L1").Value = "Codificaciones"
+    
+    Set l_column = Sheets("Resultado").Range("L2:L300")
     For Each cell In l_column
-        formula_cell = cell.Formula2Local
-        Sheets("Resultado").Range("M1").Value = formula_cell
-        parameters = Split(formula_cell, ",")
-        Sheets("Resultado").Range("M2").Value = parameters
+        If cell.Value <> "" Then
+            formula_cell = cell.Formula
+            ' Sheets("Resultado").Range("M2").Value = formula_cell
+            
+            parameters = Split(formula_cell, ",")
+            formula_completed = parameters(0) & "," & parameters(1) & "," & 33 & "," & parameters(3)
+            Sheets("Resultado").Range("L" & cell_counter).Formula = formula_completed
+            
+            cell.NumberFormat = "General"
+            cell_counter = cell_counter + 1
+        End If
     Next cell
 End Sub
