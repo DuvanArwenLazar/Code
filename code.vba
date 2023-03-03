@@ -39,7 +39,7 @@ Sub Process_auto()
         End If
     Next sheets_book
     
-    Worksheets.Add.Name = "Duplicate"
+    Worksheets.Add.Name = "Consolidado"
     
     ' Escribir la informacion de todas las hojas en una.
     For Each sheets_book In codificacion_nd_book.Worksheets
@@ -57,7 +57,7 @@ Sub Process_auto()
                     
                     ' Metodo 2 (Funciono mejor en este caso)
                     Sheets(sheets_book.Name).Rows(counter).Copy
-                    Sheets("Duplicate").Range("A" & aux).PasteSpecial xlPasteAll
+                    Sheets("Consolidado").Range("A" & aux).PasteSpecial xlPasteAll
                     
                     counter = counter + 1
                     aux = aux + 1
@@ -68,15 +68,39 @@ Sub Process_auto()
         End If
     Next sheets_book
     
+    ' Rango
+    Columns("A").Insert
+    Range("A2").Value = "Rango"
+    Range("A2").Interior.Color = RGB(146, 208, 60)
+    Range("A2").Font.Color = RGB(255, 255, 255)
+    
+    For Each sheets_book In codificacion_nd_book.Worksheets
+    
+        ' Recorrer Columna De Valores
+        If sheets_book.Name = "Nacional Cacharreros" Or sheets_book.Name = "Nacional Abarroteros" Or sheets_book.Name = "Costa Abarroteros" Or sheets_book.Name = "Costa Cacharreros" Or sheets_book.Name = "Antioquia Cacharreros" Or sheets_book.Name = "Antioquia Abarrotero" Then
+            Set datahub_column = sheets_book.Range("A3:A250")
+            For Each row In datahub_column
+                If row.Value <> "" Then
+                    Sheets("Consolidado").Range("A" & aux).Value = "Hola"
+                    counter = counter + 1
+                    aux = aux + 1
+                Else
+                    counter = 1
+                End If
+            Next row
+        End If
+    Next sheets_book
+    
+    
     ' Eliminacion de los titulos (No decidido aun)
-'    Dim i As Long
-'    Dim LastRow As Long
-'    LastRow = Sheets("Duplicate").Cells.Find(What:="*", SearchOrder:=xlRows, SearchDirection:=xlPrevious).row
-'    For i = LastRow To 1 Step -1
-'        If Sheets("Duplicate").Cells(i, 1).Value = "Primer Datahub" Then
-'            ActiveSheet.Rows(i).EntireRow.Delete
-'        End If
-'    Next i
+    Dim i As Long
+    Dim LastRow As Long
+    LastRow = Sheets("Consolidado").Cells.Find(What:="*", SearchOrder:=xlRows, SearchDirection:=xlPrevious).row
+    For i = LastRow To 1 Step -1
+        If Sheets("Consolidado").Cells(i, 1).Value = "Primer Datahub" Then
+            ActiveSheet.Rows(i).EntireRow.Delete
+        End If
+    Next i
 
     Dim l_column As Range
     Dim formula_cell, formula_completed As String
@@ -101,7 +125,6 @@ Sub Process_auto()
         End If
     Next cell
     
-    '
     Dim reference_bimester As Range
     Dim reference_counter As Integer
     Dim liquidacion_ruedo_book As Workbook
@@ -113,7 +136,6 @@ Sub Process_auto()
     Set reference_bimester = Sheets("Liquidación Al Ruedo ND22").Range("AE3:AE245")
     
     For Each cell In reference_bimester
-        ' cell.Formula = "=BUSCARV(H3,'[Al Ruedo Codificación ND.xlsx]Resultado'!$A:$L,12,FALSO)"
         cell.FormulaLocal = "=BUSCARV(H" & reference_counter & ",'[Al Ruedo Codificación ND.xlsx]Resultado'!$A:$L,12,FALSO)"
         reference_counter = reference_counter + 1
     Next cell
