@@ -1,10 +1,19 @@
 Option Explicit
-Sub Process_auto()
+Sub automation()
 
+    ' Verificacion de Rutas
+    If ThisWorkbook.Sheets("Automatizacion").Range("A6").Value = "" Then
+        MsgBox "La ruta de 'Al Ruedo Codificacion' NO Puede Estar Vacia"
+        Exit Sub
+    ElseIf ThisWorkbook.Sheets("Automatizacion").Range("A12").Value = "" Then
+        MsgBox "La ruta de 'Liquidacion' NO Puede Estar Vacia"
+        Exit Sub
+    End If
+    
     ' Declaracion de variables
     Dim column As Range
     Dim value_sought As String
-    Dim codificacion_nd_book As Workbook
+    Dim al_ruedo_book As Workbook
     Dim sheets_book As Worksheet
     
     Dim datahub_column As Range
@@ -23,10 +32,10 @@ Sub Process_auto()
     ' Asignacion de valor y abrir archivo
     value_sought = "Codificaciones"
     
-    Set codificacion_nd_book = Workbooks.Open("C:\Users\duvan.espinal\Desktop\Automatizacion PYG\Al Ruedo Codificación ND.xlsx")
+    Set al_ruedo_book = Workbooks.Open(Sheets("Automatizacion").Range("A6").Value)
     
     ' Buscar de la columna
-    For Each sheets_book In codificacion_nd_book.Worksheets
+    For Each sheets_book In al_ruedo_book.Worksheets
         If sheets_book.Name = "Nacional Cacharreros" Or sheets_book.Name = "Nacional Abarroteros" Or sheets_book.Name = "Costa Abarroteros" Or sheets_book.Name = "Costa Cacharreros" Or sheets_book.Name = "Antioquia Cacharreros" Or sheets_book.Name = "Antioquia Abarrotero" Then
             Dim cell As Range
             Set column = sheets_book.Range("AG:AG")
@@ -42,7 +51,7 @@ Sub Process_auto()
     Worksheets.Add.Name = "Consolidado"
     
     ' Escribir la informacion de todas las hojas en una.
-    For Each sheets_book In codificacion_nd_book.Worksheets
+    For Each sheets_book In al_ruedo_book.Worksheets
     
         ' Recorrer Columna De Valores
         If sheets_book.Name = "Nacional Cacharreros" Or sheets_book.Name = "Nacional Abarroteros" Or sheets_book.Name = "Costa Abarroteros" Or sheets_book.Name = "Costa Cacharreros" Or sheets_book.Name = "Antioquia Cacharreros" Or sheets_book.Name = "Antioquia Abarrotero" Then
@@ -74,22 +83,25 @@ Sub Process_auto()
     Range("A2").Interior.Color = RGB(146, 208, 60)
     Range("A2").Font.Color = RGB(255, 255, 255)
     
-    For Each sheets_book In codificacion_nd_book.Worksheets
+    counter = 1
+    aux = 1
     
-        ' Recorrer Columna De Valores
-        If sheets_book.Name = "Nacional Cacharreros" Or sheets_book.Name = "Nacional Abarroteros" Or sheets_book.Name = "Costa Abarroteros" Or sheets_book.Name = "Costa Cacharreros" Or sheets_book.Name = "Antioquia Cacharreros" Or sheets_book.Name = "Antioquia Abarrotero" Then
-            Set datahub_column = sheets_book.Range("A3:A250")
-            For Each row In datahub_column
-                If row.Value <> "" Then
-                    Sheets("Consolidado").Range("A" & aux).Value = "Hola"
-                    counter = counter + 1
-                    aux = aux + 1
-                Else
-                    counter = 1
-                End If
-            Next row
-        End If
-    Next sheets_book
+'    For Each sheets_book In al_ruedo_book.Worksheets
+'
+'        ' Recorrer Columna De Valores
+'        If sheets_book.Name = "Nacional Cacharreros" Or sheets_book.Name = "Nacional Abarroteros" Or sheets_book.Name = "Costa Abarroteros" Or sheets_book.Name = "Costa Cacharreros" Or sheets_book.Name = "Antioquia Cacharreros" Or sheets_book.Name = "Antioquia Abarrotero" Then
+'            Set datahub_column = sheets_book.Range("A3:A250")
+'            For Each row In datahub_column
+'                If row.Value <> "" Then
+'                    Sheets("Consolidado").Range("A" & aux).Value = "Hola"
+'                    counter = counter + 1
+'                    aux = aux + 1
+'                Else
+'                    counter = 1
+'                End If
+'            Next row
+'        End If
+'    Next sheets_book
     
     
     ' Eliminacion de los titulos (No decidido aun)
@@ -127,11 +139,11 @@ Sub Process_auto()
     
     Dim reference_bimester As Range
     Dim reference_counter As Integer
-    Dim liquidacion_ruedo_book As Workbook
+    Dim liquidacion_book As Workbook
     reference_counter = 3
     
-    Set liquidacion_ruedo_book = Workbooks.Open("C:\Users\duvan.espinal\Desktop\Automatizacion PYG\Liquidación Al Ruedo - NovDic22.xlsm")
-    liquidacion_ruedo_book.Activate
+    Set liquidacion_book = Workbooks.Open(ThisWorkbook.Sheets("Automatizacion").Range("A12").Value)
+    liquidacion_book.Activate
     
     Set reference_bimester = Sheets("Liquidación Al Ruedo ND22").Range("AE3:AE245")
     
@@ -140,3 +152,4 @@ Sub Process_auto()
         reference_counter = reference_counter + 1
     Next cell
 End Sub
+
