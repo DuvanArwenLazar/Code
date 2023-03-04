@@ -10,11 +10,11 @@ Sub automation()
         Exit Sub
     End If
     
-    ' Declaracion de variables
     Dim column As Range
     Dim value_sought As String
     Dim al_ruedo_book As Workbook
     Dim sheets_book As Worksheet
+    Dim last_row As Long
     
     Dim datahub_column As Range
     
@@ -29,12 +29,12 @@ Sub automation()
     
     aux = 1
     
-    ' Asignacion de valor y abrir archivo
+    ' --- Asignacion de valor y abrir archivo
     value_sought = "Codificaciones"
     
     Set al_ruedo_book = Workbooks.Open(Sheets("Automatizacion").Range("A6").Value)
     
-    ' Buscar de la columna
+    ' --- Buscar e insertar la columna necesaria
     For Each sheets_book In al_ruedo_book.Worksheets
         If sheets_book.Name = "Nacional Cacharreros" Or sheets_book.Name = "Nacional Abarroteros" Or sheets_book.Name = "Costa Abarroteros" Or sheets_book.Name = "Costa Cacharreros" Or sheets_book.Name = "Antioquia Cacharreros" Or sheets_book.Name = "Antioquia Abarrotero" Then
             Dim cell As Range
@@ -50,70 +50,67 @@ Sub automation()
     
     Worksheets.Add.Name = "Consolidado"
     
-    ' Escribir la informacion de todas las hojas en una.
-    For Each sheets_book In al_ruedo_book.Worksheets
+    Dim j As Integer
     
-        ' Recorrer Columna De Valores
+    ' --- Escribir la informacion de todas las hojas en una.
+    For Each sheets_book In al_ruedo_book.Worksheets
         If sheets_book.Name = "Nacional Cacharreros" Or sheets_book.Name = "Nacional Abarroteros" Or sheets_book.Name = "Costa Abarroteros" Or sheets_book.Name = "Costa Cacharreros" Or sheets_book.Name = "Antioquia Cacharreros" Or sheets_book.Name = "Antioquia Abarrotero" Then
-            Set datahub_column = sheets_book.Range("A3:A250")
-            For Each row In datahub_column
-                If row.Value <> "" Then
-                    ' Pasamos las filas
-                    
-                    ' Metodo 1
-                    ' Set copied_row = sheets_book.Range("A" & counter & ":AZ" & counter).Value
-                    ' Sheets("Duplicate").Range("A" & counter & ":AZ" & counter) = copied_row
-                    
-                    ' Metodo 2 (Funciono mejor en este caso)
+            last_row = sheets_book.Range("A" & Rows.Count).End(xlUp).row
+            
+            For j = 1 To last_row + 1
+                ' -- Pequeños controles
+                If counter = 1 Or counter = 2 Then
                     Sheets(sheets_book.Name).Rows(counter).Copy
                     Sheets("Consolidado").Range("A" & aux).PasteSpecial xlPasteAll
                     
                     counter = counter + 1
                     aux = aux + 1
-                Else
+                ElseIf counter > last_row Then
                     counter = 1
+                ElseIf counter <= last_row And counter > 1 And counter > 2 Then
+                    ' - Pasamos las filas
+                    Sheets(sheets_book.Name).Rows(counter).Copy
+                    Sheets("Consolidado").Range("A" & aux).PasteSpecial xlPasteAll
+                    
+                    ' - Rango
+                    Sheets("Consolidado").Range("AO" & aux).Value = sheets_book.Name
+                    
+                    counter = counter + 1
+                    aux = aux + 1
                 End If
-            Next row
+            Next j
         End If
     Next sheets_book
     
-    ' Rango
+    ' --- Rango (Nombre de la hoja a la que pertenece)
     Columns("A").Insert
-    Range("A2").Value = "Rango"
-    Range("A2").Interior.Color = RGB(146, 208, 60)
-    Range("A2").Font.Color = RGB(255, 255, 255)
     
-    counter = 1
-    aux = 1
+    Dim from_col As String
+    Dim to_col As String
+    Dim last_row_of_col As Long
     
-'    For Each sheets_book In al_ruedo_book.Worksheets
-'
-'        ' Recorrer Columna De Valores
-'        If sheets_book.Name = "Nacional Cacharreros" Or sheets_book.Name = "Nacional Abarroteros" Or sheets_book.Name = "Costa Abarroteros" Or sheets_book.Name = "Costa Cacharreros" Or sheets_book.Name = "Antioquia Cacharreros" Or sheets_book.Name = "Antioquia Abarrotero" Then
-'            Set datahub_column = sheets_book.Range("A3:A250")
-'            For Each row In datahub_column
-'                If row.Value <> "" Then
-'                    Sheets("Consolidado").Range("A" & aux).Value = "Hola"
-'                    counter = counter + 1
-'                    aux = aux + 1
-'                Else
-'                    counter = 1
-'                End If
-'            Next row
-'        End If
-'    Next sheets_book
+    from_col = "AP"
+    to_col = "A"
     
+    last_row_of_col = Sheets("Consolidado").Cells(Rows.Count, from_col).End(xlUp).row
     
-    ' Eliminacion de los titulos (No decidido aun)
+    ActiveSheet.Range(to_col & "1:" & to_col & last_row_of_col).Value = Sheets("Consolidado").Range(from_col & "1:" & from_col & last_row_of_col).Value
+
+    ' --- Eliminacion de los titulos
     Dim i As Long
-    Dim LastRow As Long
-    LastRow = Sheets("Consolidado").Cells.Find(What:="*", SearchOrder:=xlRows, SearchDirection:=xlPrevious).row
-    For i = LastRow To 1 Step -1
+    Dim lastRow As Long
+    lastRow = Sheets("Consolidado").Cells.Find(What:="*", SearchOrder:=xlRows, SearchDirection:=xlPrevious).row
+    For i = lastRow To 1 Step -1
         If Sheets("Consolidado").Cells(i, 1).Value = "Primer Datahub" Then
             ActiveSheet.Rows(i).EntireRow.Delete
         End If
     Next i
+    
+    Range("A2").Value = "Rango"
+    Range("A2").Interior.Color = RGB(146, 208, 60)
+    Range("A2").Font.Color = RGB(255, 255, 255)
 
+    ' Cambio de % a "Codificaciones"
     Dim l_column As Range
     Dim formula_cell, formula_completed As String
     Dim parameters() As String
@@ -137,6 +134,7 @@ Sub automation()
         End If
     Next cell
     
+    ' --- Referencia Bimestre (Buscarv + Recorrer valores)
     Dim reference_bimester As Range
     Dim reference_counter As Integer
     Dim liquidacion_book As Workbook
@@ -152,4 +150,3 @@ Sub automation()
         reference_counter = reference_counter + 1
     Next cell
 End Sub
-
