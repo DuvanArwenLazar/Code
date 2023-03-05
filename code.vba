@@ -109,44 +109,45 @@ Sub automation()
     Range("A2").Value = "Rango"
     Range("A2").Interior.Color = RGB(146, 208, 60)
     Range("A2").Font.Color = RGB(255, 255, 255)
+    
+    Range("AP:AP").ClearContents
 
-    ' Cambio de % a "Codificaciones"
-    Dim l_column As Range
+    ' --- Cambio de % a "Codificaciones"
+    Dim l_column As Long
     Dim formula_cell, formula_completed As String
     Dim parameters() As String
+    Dim l As Integer
     
     Dim cell_counter As Integer
     cell_counter = 2
     
     Sheets("Resultado").Range("L1").Value = "Codificaciones"
-    Set l_column = Sheets("Resultado").Range("L2:L300")
     
-    For Each cell In l_column
-        If cell.Value <> "" Then
-            formula_cell = cell.Formula
-            
-            parameters = Split(formula_cell, ",")
-            formula_completed = parameters(0) & "," & parameters(1) & "," & 33 & "," & parameters(3)
-            Sheets("Resultado").Range("L" & cell_counter).Formula = formula_completed
-            
-            cell.NumberFormat = "General"
-            cell_counter = cell_counter + 1
-        End If
-    Next cell
+    l_column = Sheets("Resultado").Range("L" & Rows.Count).End(xlUp).row
+    For l = 2 To l_column
+        formula_cell = Sheets("Resultado").Range("L" & l).Formula
+        
+        parameters = Split(formula_cell, ",")
+        formula_completed = parameters(0) & "," & parameters(1) & "," & 33 & "," & parameters(3)
+        Sheets("Resultado").Range("L" & cell_counter).Formula = formula_completed
+        
+        Sheets("Resultado").Range("L" & l).NumberFormat = "General"
+        cell_counter = cell_counter + 1
+    Next l
     
     ' --- Referencia Bimestre (Buscarv + Recorrer valores)
-    Dim reference_bimester As Range
+    Dim reference_bimester As Long
     Dim reference_counter As Integer
     Dim liquidacion_book As Workbook
+    Dim m As Integer
     reference_counter = 3
     
     Set liquidacion_book = Workbooks.Open(ThisWorkbook.Sheets("Automatizacion").Range("A12").Value)
     liquidacion_book.Activate
     
-    Set reference_bimester = Sheets("Liquidación Al Ruedo ND22").Range("AE3:AE245")
-    
-    For Each cell In reference_bimester
-        cell.FormulaLocal = "=BUSCARV(H" & reference_counter & ",'[Al Ruedo Codificación ND.xlsx]Resultado'!$A:$L,12,FALSO)"
+    reference_bimester = Sheets("Liquidación Al Ruedo ND22").Range("A" & Rows.Count).End(xlUp).row
+    For m = 3 To reference_bimester
+        Sheets("Liquidacion Al Ruedo ND22").Range("AE" & reference_counter).FormulaLocal = "=BUSCARV(H" & reference_counter & ",'[Al Ruedo Codificación ND.xlsx]Resultado'!$A:$L,12,FALSO)"
         reference_counter = reference_counter + 1
-    Next cell
+    Next m
 End Sub
