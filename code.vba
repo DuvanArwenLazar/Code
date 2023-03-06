@@ -33,6 +33,7 @@ Sub automation()
     value_sought = "Codificaciones"
     
     Set al_ruedo_book = Workbooks.Open(ThisWorkbook.Sheets("Automatizacion").range("A6").Value)
+    MsgBox al_ruedo_book.Path
     
     ' --- Buscar e insertar la columna necesaria
     For Each sheets_book In al_ruedo_book.Worksheets
@@ -42,8 +43,8 @@ Sub automation()
             Set cell = column.Find(What:=value_sought, LookIn:=xlValues, LookAt:=xlWhole)
             
             If cell Is Nothing Then
-                sheets_book.Columns("AE").Insert
-                sheets_book.Columns.range("AE:AE").ClearFormats
+                sheets_book.columns("AE").Insert
+                sheets_book.columns.range("AE:AE").ClearFormats
             End If
         End If
     Next sheets_book
@@ -83,7 +84,7 @@ Sub automation()
     Next sheets_book
     
     ' --- Rango (Nombre de la hoja a la que pertenece)
-    Columns("A").Insert
+    columns("A").Insert
     
     Dim from_col As String
     Dim to_col As String
@@ -170,6 +171,66 @@ Sub automation()
     reference_bimester = Sheets("Liquidación Al Ruedo ND22").range("A" & Rows.Count).End(xlUp).row
     
     For m = 3 To reference_bimester
-        liquidacion_book.Sheets("Liquidación Al Ruedo ND22").range("AE" & m).FormulaLocal = "=BUSCARV(H" & m & ",'[Al Ruedo Codificación ND.xlsx]Resultado'!$A:$L,12,FALSO)"
+        liquidacion_book.Sheets("Liquidación Al Ruedo ND22").range("AE" & m).FormulaLocal = "=BUSCARV(H" & m & ",'[" & al_ruedo_book.Name & "]Resultado'!$A:$L,12,FALSO)"
     Next m
+End Sub
+
+Sub total_purchases()
+    ' --- Verificacion de Rutas
+    If ThisWorkbook.Sheets("Automatizacion").range("A9").Value = "" Then
+        MsgBox "La ruta de 'Ventas Total' NO Puede Estar Vacia"
+        Exit Sub
+    End If
+    
+    ' --- Recorrer compras totales y modificar celdas de otro archivo
+    Dim liquidacion_book As Workbook
+    Dim compras_total_book As Workbook
+    
+    Set compras_total_book = Workbooks.Open(ThisWorkbook.Sheets("Automatizacion").range("A9").Value)
+    Set liquidacion_book = Workbooks.Open(ThisWorkbook.Sheets("Automatizacion").range("A12").Value)
+    
+    liquidacion_book.Activate
+    
+    Dim last_row As Long
+    Dim i As Integer
+    last_row = Cells(Rows.Count, "A").End(xlUp).row
+
+    For i = 3 To last_row
+        Cells(i, "AO").FormulaLocal = "=BUSCARV(H" & i & ",'[" & compras_total_book.Name & "]Sell out'!$B:$E, 3, FALSO)"
+        Cells(i, "AX").FormulaLocal = "=BUSCARV(H" & i & ",'[" & compras_total_book.Name & "]Sell out'!$B:$E, 4, FALSO)"
+        
+        Cells(i, "AP").FormulaLocal = "=BUSCARV(I" & i & ",'[" & compras_total_book.Name & "]Sell out'!$B:$E, 3, FALSO)"
+        Cells(i, "AY").FormulaLocal = "=BUSCARV(I" & i & ",'[" & compras_total_book.Name & "]Sell out'!$B:$E, 4, FALSO)"
+        
+        Cells(i, "AQ").FormulaLocal = "=BUSCARV(J" & i & ",'[" & compras_total_book.Name & "]Sell out'!$B:$E, 3, FALSO)"
+        Cells(i, "AZ").FormulaLocal = "=BUSCARV(J" & i & ",'[" & compras_total_book.Name & "]Sell out'!$B:$E, 4, FALSO)"
+        
+        Cells(i, "AR").FormulaLocal = "=BUSCARV(K" & i & ",'[" & compras_total_book.Name & "]Sell out'!$B:$E, 3, FALSO)"
+        Cells(i, "BA").FormulaLocal = "=BUSCARV(K" & i & ",'[" & compras_total_book.Name & "]Sell out'!$B:$E, 4, FALSO)"
+        
+        Cells(i, "AS").FormulaLocal = "=BUSCARV(L" & i & ",'[" & compras_total_book.Name & "]Sell out'!$B:$E, 3, FALSO)"
+        Cells(i, "BB").FormulaLocal = "=BUSCARV(L" & i & ",'[" & compras_total_book.Name & "]Sell out'!$B:$E, 4, FALSO)"
+        
+        Cells(i, "AT").FormulaLocal = "=BUSCARV(M" & i & ",'[" & compras_total_book.Name & "]Sell out'!$B:$E, 3, FALSO)"
+        Cells(i, "BC").FormulaLocal = "=BUSCARV(M" & i & ",'[" & compras_total_book.Name & "]Sell out'!$B:$E, 4, FALSO)"
+        
+        Cells(i, "AU").FormulaLocal = "=BUSCARV(N" & i & ",'[" & compras_total_book.Name & "]Sell out'!$B:$E, 3, FALSO)"
+        Cells(i, "BD").FormulaLocal = "=BUSCARV(N" & i & ",'[" & compras_total_book.Name & "]Sell out'!$B:$E, 4, FALSO)"
+        
+        Cells(i, "AV").FormulaLocal = "=BUSCARV(O" & i & ",'[" & compras_total_book.Name & "]Sell out'!$B:$E, 3, FALSO)"
+        Cells(i, "BE").FormulaLocal = "=BUSCARV(O" & i & ",'[" & compras_total_book.Name & "]Sell out'!$B:$E, 4, FALSO)"
+        
+        Cells(i, "AW").FormulaLocal = "=BUSCARV(P" & i & ",'[" & compras_total_book.Name & "]Sell out'!$B:$E, 3, FALSO)"
+        Cells(i, "BF").FormulaLocal = "=BUSCARV(P" & i & ",'[" & compras_total_book.Name & "]Sell out'!$B:$E, 4, FALSO)"
+    Next i
+    
+    Dim cleaning As range
+    
+    For Each cleaning In liquidacion_book.Sheets("Liquidación Al Ruedo ND22").range("AO:BF")
+        If IsError(cleaning.Value) Then
+            If cleaning.Value = CVErr(xlErrNA) Then
+                cleaning.Value = ""
+            End If
+        End If
+    Next cleaning
 End Sub
