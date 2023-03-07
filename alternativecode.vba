@@ -1,5 +1,8 @@
 Option Explicit
 Sub automation()
+    
+    ' Alternative code for versions of excel that use ";" instead of "," as parameter separator in functions
+    ' Codigo alternativo para versiones de excel que utilizan ";" en lugar de "," como separador de parametros en las funciones.
 
     ' --- Verificacion de Rutas
     If ThisWorkbook.Sheets("Automatizacion").range("A6").Value = "" Then
